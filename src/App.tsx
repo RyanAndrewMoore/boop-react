@@ -1,15 +1,40 @@
-import { useState } from 'react'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
 
+type Piece = "🐈" | "🐱" | "🐅" | "🐯";
 
+const [kitten, cat, cub, tiger]: Piece[] = ["🐈", "🐱", "🐅", "🐯"];
 
-function App() {
-
+function Square({ piece }: { piece?: Piece }) {
   return (
-    <>
-    
-    </>
-  )
+    <div className="square">
+      <button>{piece}</button>
+    </div>
+  );
 }
 
-export default App
+function Board() {
+  const pieces: Piece[] = ["🐅","🐈","🐯","🐱"]
+  const rows = [];
+  for (let i = 0; i < 6; i++) {
+    const row = [];
+    for (let j = 0; j < 6; j++) {
+      const index = Math.round(Math.random() * 3)
+      row.push(<Square piece={pieces[index]} />);
+    }
+
+    rows.push(row);
+  }
+
+  return <div className="game-board">{rows}</div>;
+}
+
+function App() {
+  return (
+    <>
+      <Board />
+    </>
+  );
+}
+
+export default App;
