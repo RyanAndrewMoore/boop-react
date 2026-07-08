@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 
 type Piece = "🐈" | "🐱" | "🐅" | "🐯";
@@ -14,7 +13,7 @@ function Square({ piece }: { piece?: Piece }) {
 }
 
 function Board() {
-  const pieces: Piece[] = ["🐅","🐈","🐯","🐱"]
+  const pieces: Piece[] = [kitten,cat,cub,tiger]
   const rows = [];
   for (let i = 0; i < 6; i++) {
     const row = [];
