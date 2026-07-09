@@ -13,7 +13,7 @@ function Square({ piece }: { piece?: Piece }) {
 }
 
 function Board() {
-  const pieces: Piece[] = [kitten,cat,cub,tiger]
+  const pieces: Piece[] = [kitten, cat, cub, tiger]
   const rows = [];
   for (let i = 0; i < 6; i++) {
     const row = [];
@@ -31,7 +31,10 @@ function Board() {
 function App() {
   return (
     <>
-      <Board />
+      <h1>Boop</h1>
+      <div className="game">
+        <Board />
+      </div>
     </>
   );
 }
