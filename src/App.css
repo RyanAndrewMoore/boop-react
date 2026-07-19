@@ -224,10 +224,11 @@ button {
 
 .game-board {
   display: grid;
-  grid-template-columns: repeat(6, 80px);
+  grid-template-columns: repeat(8, 80px);
   grid-auto-rows: 80px;
   place-items: center;
   place-content: center;
+  margin: -80px;
 }
 
 .hands {
