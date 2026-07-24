@@ -111,9 +111,9 @@ function App() {
     React.Dispatch<React.SetStateAction<Piece[][] | null[][]>>,
   ] = useState(Array(8).fill(Array(8).fill(null)));
   const [pieces, setPieces] = useState({
-    kittens: 4,
+    kittens: 8,
     cats: 0,
-    cubs: 4,
+    cubs: 8,
     tigers: 0,
   });
   const [catsAreNext, setCatsAreNext] = useState(true);
@@ -125,24 +125,31 @@ function App() {
     .fill(CUB)
     .concat(Array(hands.tigers).fill(TIGER));
   const [selected, setSelected] = useState({ piece: KITTEN, index: -1 });
+  const [winner, setWinner] = useState(false);
 
   function handlePlay(
     moveRow: number,
     moveCol: number,
     squares: [[Piece | null]],
   ) {
-    const movePiece = squares[moveRow][moveCol];
+    if (winner) return;
     const blastZone = [];
 
     // blastZone should be all pieces adjacent and diagonal to move
     for (let i = moveRow - 1; i < moveRow + 2; i++) {
       for (let j = moveCol - 1; j < moveCol + 2; j++) {
-        if (i == moveRow && j == moveCol) continue
-        blastZone.push([i,j])
+        if (i == moveRow && j == moveCol) continue;
+        blastZone.push([i, j]);
       }
     }
 
     blastZone.forEach((target) => boop(moveRow, moveCol, target[0], target[1]));
+
+    checkLines();
+
+    setSquares(squares);
+    setSelected({ piece: KITTEN, index: -1 });
+    setCatsAreNext(!catsAreNext);
 
     function boop(
       moveRow: number,
@@ -150,17 +157,117 @@ function App() {
       targetRow: number,
       targetCol: number,
     ) {
-      if (isPieceInGutter(targetRow,targetCol)) return
+      if (isPieceInGutter(targetRow, targetCol)) return;
       // (targetRow - moveRow) + targetRow, algebraically reduced
       const destinationRow = 2 * targetRow - moveRow;
       const destinationCol = 2 * targetCol - moveCol;
 
       if (squares[destinationRow][destinationCol]) return;
 
-      if (!isPieceInGutter(destinationRow, destinationCol)) {
+      const moveIsLarge = isPieceLarge(squares[moveRow][moveCol]);
+      const targetIsLarge = isPieceLarge(squares[targetRow][targetCol]);
+
+      if (!targetIsLarge || moveIsLarge) {
         squares[destinationRow][destinationCol] = squares[targetRow][targetCol];
+        squares[targetRow][targetCol] = null;
+      } else return;
+
+      if (isPieceInGutter(destinationRow, destinationCol)) {
+        squares[destinationRow][destinationCol] = null;
       }
-      squares[targetRow][targetCol] = null;
+    }
+
+    function checkLines() {
+      for (let row = 2; row < squares.length - 2; row++) {
+        for (let col = 2; col < squares.length - 2; col++) {
+          // We'll always check a line ahead vertically and horizontally,
+          // but we do some extra on the first checked row and column.
+          // This is to prevent double-checking
+          const lines = [
+            [
+              [row - 1, col + 1],
+              [row, col + 1],
+              [row + 1, col + 1],
+            ],
+            [
+              [row + 1, col - 1],
+              [row + 1, col],
+              [row + 1, col + 1],
+            ],
+            [
+              [row - 1, col - 1],
+              [row, col],
+              [row + 1, col + 1],
+            ],
+            [
+              [row + 1, col - 1],
+              [row, col],
+              [row - 1, col + 1],
+            ],
+          ];
+
+          if (row == 2) {
+            lines.push([
+              [row - 1, col - 1],
+              [row - 1, col],
+              [row - 1, col + 1],
+            ]);
+            lines.push([
+              [row, col - 1],
+              [row, col],
+              [row, col + 1],
+            ]);
+          }
+          if (col == 2) {
+            lines.push(
+              [
+                [row - 1, col - 1],
+                [row, col - 1],
+                [row + 1, col - 1],
+              ],
+              [
+                [row - 1, col],
+                [row, col],
+                [row + 1, col],
+              ],
+            );
+          }
+
+          for (const line of lines) {
+            const linePieces = line.map(
+              (square) => squares[square[0]][square[1]],
+            );
+
+            if (
+              linePieces.every((piece) => isPieceCatlike(piece)) ||
+              linePieces.every((piece) => isPieceTigerLike(piece))
+            ) {
+              if (linePieces.every((piece) => isPieceLarge(piece))) {
+                setWinner(true);
+              } else {
+                line.forEach((square) => promote(square[0], square[1]));
+              }
+            }
+          }
+        }
+      }
+    }
+
+    function promote(row: number, col: number): void {
+      if (isPieceLarge(squares[row][col])) {
+        squares[row][col] = null;
+        return;
+      }
+
+      if (isPieceCatlike(squares[row][col])) {
+        pieces.kittens--;
+        pieces.cats++;
+      } else {
+        pieces.cubs--;
+        pieces.tigers++;
+      }
+
+      squares[row][col] = null;
     }
 
     function isPieceInGutter(row: number, col: number) {
@@ -173,12 +280,16 @@ function App() {
     }
 
     function isPieceLarge(piece: Piece): boolean {
-      return [CAT, TIGER].includes(piece) ? true : false;
+      return [CAT, TIGER].includes(piece);
     }
 
-    setSquares(squares);
-    setSelected({ piece: KITTEN, index: -1 });
-    setCatsAreNext(!catsAreNext);
+    function isPieceCatlike(piece: Piece): boolean {
+      return [CAT, KITTEN].includes(piece);
+    }
+
+    function isPieceTigerLike(piece: Piece): boolean {
+      return [TIGER, CUB].includes(piece);
+    }
   }
 
   function handleSelect(piece: Piece, index: number) {
@@ -223,6 +334,7 @@ function App() {
             />
           </div>
         </div>
+        <h1>{winner ? "Winner" : ""}</h1>
       </div>
     </>
   );
