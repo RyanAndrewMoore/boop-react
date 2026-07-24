@@ -181,8 +181,8 @@ function App() {
       for (let row = 2; row < squares.length - 2; row++) {
         for (let col = 2; col < squares.length - 2; col++) {
           // We'll always check a line ahead vertically and horizontally,
-          // but we do some extra on the first checked row and column.
-          // This is to prevent double-checking
+          // and we'll always do both diagonals, but we do some extra on 
+          // the first checked row and column. This is to prevent double-checking
           const lines = [
             [
               [row - 1, col + 1],
