@@ -1,4 +1,4 @@
-import { useState, type MouseEventHandler } from "react";
+import { useState, type MouseEventHandler, type SetStateAction } from "react";
 import "./App.css";
 
 type Piece = "🐈" | "🐱" | "🐅" | "🐯" | null;
@@ -125,7 +125,8 @@ function App() {
     .fill(CUB)
     .concat(Array(hands.tigers).fill(TIGER));
   const [selected, setSelected] = useState({ piece: KITTEN, index: -1 });
-  const [winner, setWinner] = useState(false);
+  const [winner, setWinner]: [any, React.Dispatch<SetStateAction<any>>] =
+    useState(null);
 
   function handlePlay(
     moveRow: number,
@@ -148,6 +149,7 @@ function App() {
     checkLines();
 
     setSquares(squares);
+    setPieces(pieces);
     setSelected({ piece: KITTEN, index: -1 });
     setCatsAreNext(!catsAreNext);
 
@@ -181,7 +183,7 @@ function App() {
       for (let row = 2; row < squares.length - 2; row++) {
         for (let col = 2; col < squares.length - 2; col++) {
           // We'll always check a line ahead vertically and horizontally,
-          // and we'll always do both diagonals, but we do some extra on 
+          // and we'll always do both diagonals, but we do some extra on
           // the first checked row and column. This is to prevent double-checking
           const lines = [
             [
@@ -243,7 +245,7 @@ function App() {
               linePieces.every((piece) => isPieceTigerLike(piece))
             ) {
               if (linePieces.every((piece) => isPieceLarge(piece))) {
-                setWinner(true);
+                setWinner(linePieces[0]);
               } else {
                 line.forEach((square) => promote(square[0], square[1]));
               }
@@ -283,13 +285,13 @@ function App() {
       return [CAT, TIGER].includes(piece);
     }
 
-    function isPieceCatlike(piece: Piece): boolean {
-      return [CAT, KITTEN].includes(piece);
-    }
-
     function isPieceTigerLike(piece: Piece): boolean {
       return [TIGER, CUB].includes(piece);
     }
+  }
+
+  function isPieceCatlike(piece: Piece): boolean {
+    return [CAT, KITTEN].includes(piece);
   }
 
   function handleSelect(piece: Piece, index: number) {
@@ -334,7 +336,7 @@ function App() {
             />
           </div>
         </div>
-        <h1>{winner ? "Winner" : ""}</h1>
+        <h1>{winner ? `Winner: ${winner}` : ""}</h1>
       </div>
     </>
   );
