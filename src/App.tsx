@@ -313,9 +313,11 @@ function App() {
 
   return (
     <>
-      <h1>Boop</h1>
+      <h2>Boop</h2>
       <div className="game">
-        <Board squares={squares} selected={selected} onPlay={handlePlay} />
+        <div className="board">
+          <Board squares={squares} selected={selected} onPlay={handlePlay} />
+        </div>
         <div className="hands">
           <div className="cat-hand">
             <Hand
@@ -337,6 +339,38 @@ function App() {
           </div>
         </div>
         <h1>{winner ? `Winner: ${winner}` : ""}</h1>
+      </div>
+      <div className="rules">
+        <h3>How to play</h3>
+        <h4>Objective</h4>
+        <p>Align 3 of your large "face" pieces horizontally, vertically, or diagonally</p>
+        <h4>Gameplay</h4>
+        <p>
+          Players place pieces from their hands onto empty board spaces in turn.
+          Any time a piece is placed adjacent or diagonal to another piece, that
+          other piece will be <em>booped</em> by the placed piece.
+        </p>
+        <h5>Booping</h5>
+        <p>
+          When a piece is booped by another piece, if it is the same size or
+          smaller than the placed piece ("face" pieces are considered larger
+          than non-face), and if there is space at the destination, the booped
+          piece is moved in the opposite direction of the placed piece.
+        </p>
+        <p>
+          Smaller pieces cannot boop larger pieces, and larger pieces may boop
+          any other piece with sufficient space
+        </p>
+        <p>
+          If a piece is booped off of the board, it returns to that player's
+          hand
+        </p>
+        <h5>Promotion</h5>
+        <p>
+          If 3 or more of the same color piece (large or small) are aligned horizontally, vertically,
+          or diagonally, and the game is not over (3 large) then all of the aligned pieces are 
+          removed from the board and up to three of the small pieces are promoted to large pieces
+        </p>
       </div>
     </>
   );
