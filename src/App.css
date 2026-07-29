@@ -17,7 +17,6 @@
 .square {
   border: 4rem;
   border-color: var(--accent-border);
-  max-width: 100%;
 }
 
 .square,

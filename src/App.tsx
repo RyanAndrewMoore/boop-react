@@ -18,10 +18,13 @@ function Square({
   const style: React.CSSProperties = {};
 
   if (toggleSelected) style.backgroundColor = "var(--accent-border)";
-  if (invisible) style.visibility = "hidden";
+  if (invisible) {
+    style.visibility = "hidden";
+    style.height = 0
+  }
 
   return (
-    <div className="square">
+    <div className="square" style={style}>
       <button style={style} onClick={onSquareClick}>
         {piece}
       </button>
